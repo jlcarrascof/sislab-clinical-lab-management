@@ -10,12 +10,14 @@ import { HealthController } from './health/health.controller';
 import { TenantsModule } from './tenants/tenants.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module';
 import { TenantMiddleware } from './common/middlewares/tenant.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
+    RedisModule,
     TenantsModule,
     UsersModule,
     AuthModule,

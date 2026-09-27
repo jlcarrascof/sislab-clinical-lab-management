@@ -14,6 +14,7 @@ import { Tenant } from '../tenants/entities/tenant.entity';
 import { User } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto, @CurrentTenant() tenant: Tenant) {
     return this.authService.login(dto, tenant);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  refresh(@Body() dto: RefreshTokenDto, @CurrentTenant() tenant: Tenant) {
+    return this.authService.refresh(dto.refresh_token, tenant);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(@Body() dto: RefreshTokenDto) {
+    await this.authService.logout(dto.refresh_token);
   }
 
   @Get('me')
