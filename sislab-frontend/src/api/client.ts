@@ -6,17 +6,19 @@ export const TENANT_SLUG = import.meta.env.VITE_TENANT_SLUG
 
 const baseConfig = {
   baseURL: API_URL,
+  // Without a timeout a stalled server leaves the UI spinning forever
+  timeout: 15_000,
   headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': TENANT_SLUG },
 }
 
 export const apiClient = axios.create(baseConfig)
 
-/** Cliente sin interceptores: para /auth/refresh y /auth/logout (evita bucles) */
+/** Client without interceptors: for /auth/refresh and /auth/logout (avoids loops) */
 export const rawClient = axios.create(baseConfig)
 
 /**
- * El authStore registra estos callbacks al crearse.
- * Así el cliente no importa el store (sin dependencias circulares).
+ * authStore registers these callbacks when it is created,
+ * so the client never imports the store (no circular dependency).
  */
 interface AuthBridge {
   getAccessToken: () => string | null
@@ -36,12 +38,12 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-// Un único refresh en vuelo: los 401 simultáneos esperan la misma promesa
+// A single in-flight refresh: concurrent 401s await the same promise
 let refreshPromise: Promise<string> | null = null
 
 async function refreshAccessToken(): Promise<string> {
   const refreshToken = bridge?.getRefreshToken()
-  if (!refreshToken) throw new Error('Sin refresh token')
+  if (!refreshToken) throw new Error('No refresh token')
 
   const { data } = await rawClient.post<RefreshResponse>('/auth/refresh', {
     refresh_token: refreshToken,
@@ -57,7 +59,7 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const original = error.config as RetriableConfig | undefined
 
-    // Un 401 de /auth/* (p.ej. password incorrecto) no es una sesión expirada
+    // A 401 from /auth/* (e.g. wrong password) is not an expired session
     const isAuthEndpoint = original?.url?.startsWith('/auth/') ?? false
     if (
       error.response?.status !== 401 ||

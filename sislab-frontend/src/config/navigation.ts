@@ -1,10 +1,12 @@
 import { UserRole } from '@/types'
+import type en from '@/i18n/locales/en'
 
 const ALL = Object.values(UserRole)
-const { ADMIN, TECNICO, MEDICO, RECEPCIONISTA } = UserRole
+const { ADMIN, TECHNICIAN, DOCTOR, RECEPTIONIST } = UserRole
 
 export interface NavItem {
-  label: string
+  /** Key under `nav.*` in the locale files */
+  key: keyof typeof en.nav
   icon: string
   path: string
   roles: UserRole[]
@@ -12,17 +14,17 @@ export interface NavItem {
 }
 
 /**
- * Fuente única de verdad del menú Y de los permisos de ruta:
- * el router usa `roles` para bloquear el acceso directo por URL.
+ * Single source of truth for the menu AND route permissions:
+ * the router uses `roles` to block direct access by URL.
  */
 export const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', icon: '📊', path: '/dashboard', roles: ALL, sprint: 10 },
-  { label: 'Pacientes', icon: '👥', path: '/pacientes', roles: [ADMIN, MEDICO, RECEPCIONISTA], sprint: 2 },
-  { label: 'Médicos', icon: '🩺', path: '/medicos', roles: [ADMIN, RECEPCIONISTA], sprint: 2 },
-  { label: 'Agenda', icon: '📅', path: '/agenda', roles: [ADMIN, TECNICO, RECEPCIONISTA], sprint: 3 },
-  { label: 'Catálogo', icon: '🧪', path: '/catalogo', roles: [ADMIN, TECNICO], sprint: 4 },
-  { label: 'Órdenes', icon: '📋', path: '/ordenes', roles: ALL, sprint: 5 },
-  { label: 'Resultados', icon: '🔬', path: '/resultados', roles: [ADMIN, TECNICO, MEDICO], sprint: 6 },
-  { label: 'Informes', icon: '📄', path: '/informes', roles: ALL, sprint: 7 },
-  { label: 'Facturación', icon: '💰', path: '/facturacion', roles: [ADMIN, RECEPCIONISTA], sprint: 8 },
+  { key: 'dashboard', icon: '📊', path: '/dashboard', roles: ALL, sprint: 10 },
+  { key: 'patients', icon: '👥', path: '/patients', roles: [ADMIN, DOCTOR, RECEPTIONIST], sprint: 2 },
+  { key: 'doctors', icon: '🩺', path: '/doctors', roles: [ADMIN, RECEPTIONIST], sprint: 2 },
+  { key: 'schedule', icon: '📅', path: '/schedule', roles: [ADMIN, TECHNICIAN, RECEPTIONIST], sprint: 3 },
+  { key: 'catalog', icon: '🧪', path: '/catalog', roles: [ADMIN, TECHNICIAN], sprint: 4 },
+  { key: 'orders', icon: '📋', path: '/orders', roles: ALL, sprint: 5 },
+  { key: 'results', icon: '🔬', path: '/results', roles: [ADMIN, TECHNICIAN, DOCTOR], sprint: 6 },
+  { key: 'reports', icon: '📄', path: '/reports', roles: ALL, sprint: 7 },
+  { key: 'billing', icon: '💰', path: '/billing', roles: [ADMIN, RECEPTIONIST], sprint: 8 },
 ]

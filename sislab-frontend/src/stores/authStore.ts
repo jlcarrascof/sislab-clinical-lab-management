@@ -5,7 +5,7 @@ import { clearSession, loadSession, saveSession } from '@/api/session'
 import type { LoginResponse, Tenant, User } from '@/types'
 
 export const useAuthStore = defineStore('auth', () => {
-  // Restaura la sesión al crear el store (recarga de página)
+  // Restore the session when the store is created (page reload)
   const stored = loadSession()
   const user = ref<User | null>(stored?.user ?? null)
   const tenant = ref<Tenant | null>(stored?.tenant ?? null)
@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
     const token = refreshToken.value
     reset()
     if (token) {
-      // Revoca el refresh token en el servidor; si falla, igual cerramos localmente
+      // Revoke the refresh token server-side; if it fails we still sign out locally
       await rawClient.post('/auth/logout', { refresh_token: token }).catch(() => undefined)
     }
   }
@@ -61,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
     },
     onSessionExpired: () => {
       reset()
-      // Import dinámico: evita dependencia circular store ↔ router
+      // Dynamic import avoids a store ↔ router circular dependency
       void import('@/router').then(({ default: router }) =>
         router.push({ path: '/login', query: { expired: '1' } }),
       )

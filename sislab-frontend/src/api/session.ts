@@ -1,8 +1,9 @@
 import type { Tenant, User } from '@/types'
+import { readStorage, removeStorage, writeStorage } from '@/utils/storage'
 
 /**
- * Persistencia de la sesión en sessionStorage (se borra al cerrar la pestaña).
- * Único lugar que toca el storage: authStore y apiClient pasan por acá.
+ * Session persistence in sessionStorage (cleared when the tab closes).
+ * The only module that touches session storage: authStore and apiClient go through it.
  */
 const KEY = 'sislab.session'
 
@@ -14,26 +15,19 @@ export interface StoredSession {
 }
 
 export function loadSession(): StoredSession | null {
+  const raw = readStorage(sessionStorage, KEY)
+  if (!raw) return null
   try {
-    const raw = sessionStorage.getItem(KEY)
-    return raw ? (JSON.parse(raw) as StoredSession) : null
+    return JSON.parse(raw) as StoredSession
   } catch {
     return null
   }
 }
 
 export function saveSession(session: StoredSession): void {
-  try {
-    sessionStorage.setItem(KEY, JSON.stringify(session))
-  } catch {
-    /* storage bloqueado (modo privado): la sesión vive solo en memoria */
-  }
+  writeStorage(sessionStorage, KEY, JSON.stringify(session))
 }
 
 export function clearSession(): void {
-  try {
-    sessionStorage.removeItem(KEY)
-  } catch {
-    /* noop */
-  }
+  removeStorage(sessionStorage, KEY)
 }

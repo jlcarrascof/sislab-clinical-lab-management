@@ -1,5 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { watch } from 'vue'
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 import { NAV_ITEMS } from '@/config/navigation'
+import { i18n } from '@/i18n'
 import { useAuthStore } from '@/stores/authStore'
 import type { UserRole } from '@/types'
 
@@ -7,16 +9,17 @@ declare module 'vue-router' {
   interface RouteMeta {
     public?: boolean
     roles?: UserRole[]
-    title?: string
+    /** i18n key for the page title */
+    titleKey?: string
     sprint?: number
   }
 }
 
-// Módulos de sprints futuros: placeholder con los permisos ya aplicados
+// Modules from upcoming sprints: placeholder page with permissions already enforced
 const upcomingRoutes = NAV_ITEMS.filter((item) => item.path !== '/dashboard').map((item) => ({
   path: item.path.slice(1),
   component: () => import('@/views/ComingSoonView.vue'),
-  meta: { roles: item.roles, title: item.label, sprint: item.sprint },
+  meta: { roles: item.roles, titleKey: `nav.${item.key}`, sprint: item.sprint },
 }))
 
 const router = createRouter({
@@ -25,7 +28,7 @@ const router = createRouter({
     {
       path: '/login',
       component: () => import('@/views/LoginView.vue'),
-      meta: { public: true, title: 'Iniciar sesión' },
+      meta: { public: true, titleKey: 'login.title' },
     },
     {
       path: '/',
@@ -35,7 +38,7 @@ const router = createRouter({
         {
           path: 'dashboard',
           component: () => import('@/views/DashboardView.vue'),
-          meta: { title: 'Dashboard' },
+          meta: { titleKey: 'nav.dashboard' },
         },
         ...upcomingRoutes,
       ],
@@ -53,15 +56,20 @@ router.beforeEach((to) => {
   if (!auth.isAuthenticated) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
-  // Rol sin permiso (p.ej. un TECNICO escribiendo /facturacion en la URL)
+  // Role without permission (e.g. a technician typing /billing in the address bar)
   if (to.meta.roles && auth.user && !to.meta.roles.includes(auth.user.role)) {
     return '/dashboard'
   }
   return true
 })
 
-router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} · SisLab` : 'SisLab'
-})
+function updateTitle(route: RouteLocationNormalized) {
+  const { t } = i18n.global
+  document.title = route.meta.titleKey ? `${t(route.meta.titleKey)} · SisLab` : 'SisLab'
+}
+
+router.afterEach(updateTitle)
+// Keep the tab title in sync when the language changes
+watch(i18n.global.locale, () => updateTitle(router.currentRoute.value))
 
 export default router

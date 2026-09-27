@@ -1,9 +1,9 @@
-// Objeto `as const` en lugar de `enum`: el tsconfig usa erasableSyntaxOnly
+// `as const` object instead of `enum`: tsconfig enables erasableSyntaxOnly
 export const UserRole = {
   ADMIN: 'ADMIN',
-  TECNICO: 'TECNICO',
-  MEDICO: 'MEDICO',
-  RECEPCIONISTA: 'RECEPCIONISTA',
+  TECHNICIAN: 'TECHNICIAN',
+  DOCTOR: 'DOCTOR',
+  RECEPTIONIST: 'RECEPTIONIST',
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
