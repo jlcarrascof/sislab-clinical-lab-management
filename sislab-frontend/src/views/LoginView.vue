@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { TENANT_SLUG } from '@/api/client'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 import { useAuthStore } from '@/stores/authStore'
 
 const MIN_PASSWORD = 6
@@ -83,7 +84,8 @@ function inputClass(field: 'email' | 'password') {
 
 <template>
   <main class="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-950">
-    <div class="absolute top-4 right-4">
+    <div class="absolute top-4 right-4 flex items-center gap-2">
+      <ThemeToggle />
       <LanguageSwitcher />
     </div>
 

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 import { NAV_ITEMS } from '@/config/navigation'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -70,7 +71,8 @@ async function handleLogout() {
             </p>
           </div>
         </div>
-        <div class="flex items-center justify-between px-3">
+        <div class="flex items-center justify-between gap-2 px-3">
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
         <button
