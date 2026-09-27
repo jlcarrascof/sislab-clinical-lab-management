@@ -1,5 +1,5 @@
-# Servicios de desarrollo local de SisLab
-# Puertos no estándar (5433/6380) para no chocar con otros proyectos
+# Local development services for SisLab
+# Non-default host ports (5433/6380) to avoid clashing with other projects
 services:
   postgres:
     image: postgres:16-alpine
