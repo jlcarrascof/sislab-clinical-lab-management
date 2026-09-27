@@ -11,7 +11,10 @@ export class UsersService {
   ) {}
 
   findById(id: string): Promise<User | null> {
-    return this.userRepo.findOne({ where: { id }, relations: { tenant: true } });
+    return this.userRepo.findOne({
+      where: { id },
+      relations: { tenant: true },
+    });
   }
 
   /** Incluye password_hash (oculto por defecto) — solo para autenticación */

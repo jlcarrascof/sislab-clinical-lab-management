@@ -1,9 +1,15 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { HealthController } from './health/health.controller';
 import { TenantsModule } from './tenants/tenants.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import { TenantMiddleware } from './common/middlewares/tenant.middleware';
 
 @Module({
@@ -12,6 +18,7 @@ import { TenantMiddleware } from './common/middlewares/tenant.middleware';
     DatabaseModule,
     TenantsModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [HealthController],
 })

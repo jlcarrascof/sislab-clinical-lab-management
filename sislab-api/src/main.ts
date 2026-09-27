@@ -14,7 +14,11 @@ async function bootstrap() {
 
   // Equivalente a $request->validate() de Laravel, aplicado a todos los DTOs
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
 
   const port = Number(config.get('PORT', 3000));
