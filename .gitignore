@@ -8,3 +8,6 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Local-only sprint artifacts (slides, screenshots, PR notes)
+.artifacts/
