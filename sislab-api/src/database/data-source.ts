@@ -5,7 +5,7 @@ import { User } from '../users/entities/user.entity';
 
 config({ quiet: true });
 
-/** DataSource fuera de Nest: seeders y (más adelante) migraciones */
+/** Standalone DataSource (outside Nest) for seeders and, later, migrations */
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DATABASE_HOST,

@@ -6,14 +6,14 @@ import {
 import type { Request } from 'express';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 
-/** @CurrentTenant() — laboratorio del request (lo adjunta TenantMiddleware) */
+/** @CurrentTenant() — laboratory of the request (set by TenantMiddleware) */
 export const CurrentTenant = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): Tenant => {
     const tenant = ctx.switchToHttp().getRequest<Request>().tenant;
     if (!tenant) {
-      // Solo pasa si la ruta quedó excluida del TenantMiddleware por error
+      // Only happens if the route was mistakenly excluded from TenantMiddleware
       throw new InternalServerErrorException(
-        'Tenant no resuelto para esta ruta',
+        'Tenant not resolved for this route',
       );
     }
     return tenant;

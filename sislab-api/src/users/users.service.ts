@@ -17,7 +17,7 @@ export class UsersService {
     });
   }
 
-  /** Incluye password_hash (oculto por defecto) — solo para autenticación */
+  /** Includes password_hash (hidden by default) — authentication only */
   findForLogin(tenantId: string, email: string): Promise<User | null> {
     return this.userRepo
       .createQueryBuilder('user')

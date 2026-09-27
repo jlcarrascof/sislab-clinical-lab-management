@@ -10,9 +10,9 @@ interface RefreshSession {
 }
 
 /**
- * Refresh tokens opacos guardados en Redis (clave = hash SHA-256 del token).
- * - Rotación: cada uso invalida el token y emite uno nuevo.
- * - Revocación: logout borra la clave; desactivar un usuario corta su sesión en el próximo refresh.
+ * Opaque refresh tokens stored in Redis (key = SHA-256 hash of the token).
+ * - Rotation: every use invalidates the token and issues a new one.
+ * - Revocation: logout deletes the key; deactivating a user cuts their session on the next refresh.
  */
 @Injectable()
 export class RefreshTokenService {
@@ -36,7 +36,7 @@ export class RefreshTokenService {
     return token;
   }
 
-  /** Lee y borra de forma atómica: un token solo se puede usar una vez */
+  /** Atomic read-and-delete: a token can only be used once */
   async consume(token: string): Promise<RefreshSession | null> {
     const raw = await this.redis.getdel(this.key(token));
     return raw ? (JSON.parse(raw) as RefreshSession) : null;

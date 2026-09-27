@@ -3,7 +3,7 @@ import { runInitialSeed } from './initial.seed';
 
 async function main() {
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('El seed de demo no se ejecuta en producción');
+    throw new Error('The demo seed must not run in production');
   }
   await AppDataSource.initialize();
   try {

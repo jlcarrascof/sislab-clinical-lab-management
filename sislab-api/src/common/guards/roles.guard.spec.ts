@@ -17,32 +17,32 @@ describe('RolesGuard', () => {
 
   afterEach(() => jest.restoreAllMocks());
 
-  it('permite el acceso si la ruta no declara @Roles()', () => {
+  it('allows access when the route declares no @Roles()', () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(undefined);
-    expect(guard.canActivate(contextWithUser({ role: UserRole.TECNICO }))).toBe(
-      true,
-    );
+    expect(
+      guard.canActivate(contextWithUser({ role: UserRole.TECHNICIAN })),
+    ).toBe(true);
   });
 
-  it('permite el acceso si el usuario tiene uno de los roles requeridos', () => {
+  it('allows access when the user has one of the required roles', () => {
     jest
       .spyOn(reflector, 'getAllAndOverride')
-      .mockReturnValue([UserRole.ADMIN, UserRole.MEDICO]);
-    expect(guard.canActivate(contextWithUser({ role: UserRole.MEDICO }))).toBe(
+      .mockReturnValue([UserRole.ADMIN, UserRole.DOCTOR]);
+    expect(guard.canActivate(contextWithUser({ role: UserRole.DOCTOR }))).toBe(
       true,
     );
   });
 
-  it('lanza ForbiddenException si el rol no alcanza', () => {
+  it('throws ForbiddenException when the role is not allowed', () => {
     jest
       .spyOn(reflector, 'getAllAndOverride')
       .mockReturnValue([UserRole.ADMIN]);
     expect(() =>
-      guard.canActivate(contextWithUser({ role: UserRole.RECEPCIONISTA })),
+      guard.canActivate(contextWithUser({ role: UserRole.RECEPTIONIST })),
     ).toThrow(ForbiddenException);
   });
 
-  it('lanza ForbiddenException si no hay usuario en el request', () => {
+  it('throws ForbiddenException when there is no user on the request', () => {
     jest
       .spyOn(reflector, 'getAllAndOverride')
       .mockReturnValue([UserRole.ADMIN]);

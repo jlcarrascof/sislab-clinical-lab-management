@@ -27,18 +27,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  /** Lo que retorna queda en req.user */
+  /** The returned value ends up in req.user */
   async validate(req: Request, payload: JwtPayload): Promise<User> {
-    // Aislamiento multi-tenant: un token del laboratorio A no sirve con X-Tenant-ID del B
+    // Multi-tenant isolation: a token issued for lab A is rejected with lab B's X-Tenant-ID
     if (!req.tenant || req.tenant.id !== payload.tenant_id) {
       throw new UnauthorizedException(
-        'El token no pertenece a este laboratorio',
+        'Token does not belong to this laboratory',
       );
     }
 
     const user = await this.usersService.findById(payload.sub);
     if (!user || !user.is_active) {
-      throw new UnauthorizedException('Usuario no encontrado o inactivo');
+      throw new UnauthorizedException('User not found or inactive');
     }
     return user;
   }

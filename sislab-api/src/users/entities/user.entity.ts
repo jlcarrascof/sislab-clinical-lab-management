@@ -12,9 +12,9 @@ import { Tenant } from '../../tenants/entities/tenant.entity';
 
 export enum UserRole {
   ADMIN = 'ADMIN',
-  TECNICO = 'TECNICO',
-  MEDICO = 'MEDICO',
-  RECEPCIONISTA = 'RECEPCIONISTA',
+  TECHNICIAN = 'TECHNICIAN',
+  DOCTOR = 'DOCTOR',
+  RECEPTIONIST = 'RECEPTIONIST',
 }
 
 @Entity('users')
@@ -33,7 +33,7 @@ export class User {
   @Column()
   email!: string;
 
-  // select: false → nunca viaja en queries salvo que se pida explícitamente
+  // select: false → never loaded unless explicitly requested
   @Column({ select: false })
   password_hash!: string;
 

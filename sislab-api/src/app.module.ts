@@ -26,7 +26,7 @@ import { TenantMiddleware } from './common/middlewares/tenant.middleware';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Todas las rutas requieren tenant salvo /health (sin tenant, lo usa Render)
+    // Every route requires a tenant except /health (used by Render, no tenant)
     consumer
       .apply(TenantMiddleware)
       .exclude({ path: 'health', method: RequestMethod.GET })

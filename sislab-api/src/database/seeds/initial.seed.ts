@@ -6,6 +6,7 @@ import { User, UserRole } from '../../users/entities/user.entity';
 export const DEMO_TENANT_SLUG = 'lab-demo';
 export const DEMO_PASSWORD = 'password123';
 
+// Demo data represents a Spanish-speaking laboratory; code stays in English
 const DEMO_USERS = [
   {
     email: 'admin@lab-demo.com',
@@ -14,26 +15,26 @@ const DEMO_USERS = [
     last_name: 'Sistema',
   },
   {
-    email: 'tecnico@lab-demo.com',
-    role: UserRole.TECNICO,
+    email: 'tech@lab-demo.com',
+    role: UserRole.TECHNICIAN,
     first_name: 'Carlos',
     last_name: 'Pérez',
   },
   {
-    email: 'medico@lab-demo.com',
-    role: UserRole.MEDICO,
+    email: 'doctor@lab-demo.com',
+    role: UserRole.DOCTOR,
     first_name: 'María',
     last_name: 'Rodríguez',
   },
   {
-    email: 'recepcion@lab-demo.com',
-    role: UserRole.RECEPCIONISTA,
+    email: 'reception@lab-demo.com',
+    role: UserRole.RECEPTIONIST,
     first_name: 'Ana',
     last_name: 'Gómez',
   },
 ];
 
-/** Idempotente: se puede correr varias veces sin duplicar datos */
+/** Idempotent: safe to run multiple times without duplicating data */
 export async function runInitialSeed(dataSource: DataSource): Promise<void> {
   const tenantRepo = dataSource.getRepository(Tenant);
   const userRepo = dataSource.getRepository(User);
@@ -44,16 +45,16 @@ export async function runInitialSeed(dataSource: DataSource): Promise<void> {
       tenantRepo.create({
         name: 'Laboratorio Clínico Demo',
         slug: DEMO_TENANT_SLUG,
-        rif: 'J-12345678-9',
-        direccion: 'Av. Principal, Caracas',
-        telefono: '0212-1234567',
+        tax_id: 'J-12345678-9',
+        address: 'Av. Principal, Caracas',
+        phone: '0212-1234567',
         email: 'info@lab-demo.com',
-        plan: TenantPlan.PROFESIONAL,
+        plan: TenantPlan.PROFESSIONAL,
       }),
     );
-    console.log(`✔ Tenant creado: ${DEMO_TENANT_SLUG}`);
+    console.log(`✔ Tenant created: ${DEMO_TENANT_SLUG}`);
   } else {
-    console.log(`• Tenant ya existe: ${DEMO_TENANT_SLUG}`);
+    console.log(`• Tenant already exists: ${DEMO_TENANT_SLUG}`);
   }
 
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
@@ -63,7 +64,7 @@ export async function runInitialSeed(dataSource: DataSource): Promise<void> {
       email: data.email,
     });
     if (exists) {
-      console.log(`• Usuario ya existe: ${data.email}`);
+      console.log(`• User already exists: ${data.email}`);
       continue;
     }
     await userRepo.save(
@@ -73,10 +74,10 @@ export async function runInitialSeed(dataSource: DataSource): Promise<void> {
         password_hash: passwordHash,
       }),
     );
-    console.log(`✔ Usuario creado: ${data.email} (${data.role})`);
+    console.log(`✔ User created: ${data.email} (${data.role})`);
   }
 
   console.log(
-    `\nX-Tenant-ID: ${DEMO_TENANT_SLUG} — password de todos: ${DEMO_PASSWORD}`,
+    `\nX-Tenant-ID: ${DEMO_TENANT_SLUG} — password for every user: ${DEMO_PASSWORD}`,
   );
 }

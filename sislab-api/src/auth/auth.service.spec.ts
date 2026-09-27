@@ -12,10 +12,10 @@ const tenant = {
   id: 'tenant-a',
   name: 'Lab Demo',
   slug: 'lab-demo',
-  plan: TenantPlan.PROFESIONAL,
+  plan: TenantPlan.PROFESSIONAL,
 } as Tenant;
 
-const otherTenant = { ...tenant, id: 'tenant-b', slug: 'lab-otro' };
+const otherTenant = { ...tenant, id: 'tenant-b', slug: 'lab-other' };
 
 function buildUser(overrides: Partial<User> = {}): User {
   return Object.assign(new User(), {
@@ -50,7 +50,7 @@ describe('AuthService', () => {
       touchLastLogin: jest.fn().mockResolvedValue(undefined),
     };
     refreshTokens = {
-      issue: jest.fn().mockResolvedValue('refresh-nuevo'),
+      issue: jest.fn().mockResolvedValue('new-refresh'),
       consume: jest.fn(),
       revoke: jest.fn().mockResolvedValue(undefined),
     };
@@ -69,7 +69,7 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('retorna access + refresh token, user y tenant con credenciales válidas', async () => {
+    it('returns access + refresh tokens, user and tenant for valid credentials', async () => {
       usersService.findForLogin.mockResolvedValue(buildUser());
 
       const result = await service.login(
@@ -78,7 +78,7 @@ describe('AuthService', () => {
       );
 
       expect(result.access_token).toBe('access-token');
-      expect(result.refresh_token).toBe('refresh-nuevo');
+      expect(result.refresh_token).toBe('new-refresh');
       expect(result.user).toMatchObject({
         email: 'admin@lab-demo.com',
         full_name: 'Admin Sistema',
@@ -94,7 +94,7 @@ describe('AuthService', () => {
       expect(usersService.touchLastLogin).toHaveBeenCalledWith('user-1');
     });
 
-    it('busca el usuario solo dentro del tenant del request', async () => {
+    it('looks the user up only within the request tenant', async () => {
       usersService.findForLogin.mockResolvedValue(null);
 
       await expect(
@@ -109,83 +109,83 @@ describe('AuthService', () => {
       );
     });
 
-    it('lanza UnauthorizedException con password incorrecto', async () => {
+    it('throws UnauthorizedException for a wrong password', async () => {
       usersService.findForLogin.mockResolvedValue(buildUser());
 
       await expect(
         service.login(
-          { email: 'admin@lab-demo.com', password: 'incorrecta' },
+          { email: 'admin@lab-demo.com', password: 'wrong-password' },
           tenant,
         ),
-      ).rejects.toThrow('Credenciales inválidas');
+      ).rejects.toThrow('Invalid credentials');
       expect(refreshTokens.issue).not.toHaveBeenCalled();
       expect(usersService.touchLastLogin).not.toHaveBeenCalled();
     });
 
-    it('lanza UnauthorizedException si el usuario no existe (mismo mensaje)', async () => {
+    it('throws UnauthorizedException for an unknown user (same message)', async () => {
       usersService.findForLogin.mockResolvedValue(null);
 
       await expect(
         service.login(
-          { email: 'noexiste@lab-demo.com', password: 'password123' },
+          { email: 'unknown@lab-demo.com', password: 'password123' },
           tenant,
         ),
-      ).rejects.toThrow('Credenciales inválidas');
+      ).rejects.toThrow('Invalid credentials');
     });
   });
 
   describe('refresh', () => {
-    it('emite tokens nuevos con un refresh token válido', async () => {
+    it('issues new tokens for a valid refresh token', async () => {
       refreshTokens.consume.mockResolvedValue({
         userId: 'user-1',
         tenantId: 'tenant-a',
       });
       usersService.findById.mockResolvedValue(buildUser());
 
-      const result = await service.refresh('refresh-viejo', tenant);
+      const result = await service.refresh('old-refresh', tenant);
 
       expect(result).toEqual({
         access_token: 'access-token',
-        refresh_token: 'refresh-nuevo',
+        refresh_token: 'new-refresh',
       });
-      expect(refreshTokens.consume).toHaveBeenCalledWith('refresh-viejo');
+      expect(refreshTokens.consume).toHaveBeenCalledWith('old-refresh');
     });
 
-    it('lanza UnauthorizedException con refresh token expirado o ya usado', async () => {
+    it('throws UnauthorizedException for an expired or already used refresh token', async () => {
       refreshTokens.consume.mockResolvedValue(null);
 
-      await expect(service.refresh('expirado', tenant)).rejects.toThrow(
-        'Refresh token inválido o expirado',
+      await expect(service.refresh('expired', tenant)).rejects.toThrow(
+        'Invalid or expired refresh token',
       );
       expect(refreshTokens.issue).not.toHaveBeenCalled();
     });
 
-    it('rechaza un refresh token de otro laboratorio', async () => {
+    it('rejects a refresh token from another laboratory', async () => {
       refreshTokens.consume.mockResolvedValue({
         userId: 'user-1',
         tenantId: 'tenant-a',
       });
 
       await expect(
-        service.refresh('refresh-de-a', otherTenant),
+        service.refresh('refresh-from-a', otherTenant),
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('rechaza el refresh si el usuario fue desactivado', async () => {
+    it('rejects the refresh when the user was deactivated', async () => {
       refreshTokens.consume.mockResolvedValue({
         userId: 'user-1',
         tenantId: 'tenant-a',
       });
       usersService.findById.mockResolvedValue(buildUser({ is_active: false }));
 
-      await expect(service.refresh('refresh-viejo', tenant)).rejects.toThrow(
-        'Usuario no encontrado o inactivo',
+      await expect(service.refresh('old-refresh', tenant)).rejects.toThrow(
+        'User not found or inactive',
       );
     });
   });
 
   describe('logout', () => {
-    it('revoca el refresh token', async () => {
+    it('revokes the refresh token', async () => {
       await service.logout('refresh-x');
       expect(refreshTokens.revoke).toHaveBeenCalledWith('refresh-x');
     });

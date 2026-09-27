@@ -19,12 +19,12 @@ export class AuthService {
   async login(dto: LoginDto, tenant: Tenant) {
     const user = await this.usersService.findForLogin(tenant.id, dto.email);
 
-    // Mismo mensaje para "no existe" y "password incorrecto": no revelamos qué emails existen
+    // Same message for "unknown user" and "wrong password": don't reveal which emails exist
     const valid = user
       ? await bcrypt.compare(dto.password, user.password_hash)
       : false;
     if (!user || !valid) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     await this.usersService.touchLastLogin(user.id);
@@ -43,12 +43,12 @@ export class AuthService {
   async refresh(token: string, tenant: Tenant) {
     const session = await this.refreshTokens.consume(token);
     if (!session || session.tenantId !== tenant.id) {
-      throw new UnauthorizedException('Refresh token inválido o expirado');
+      throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
     const user = await this.usersService.findById(session.userId);
     if (!user || !user.is_active || user.tenant_id !== tenant.id) {
-      throw new UnauthorizedException('Usuario no encontrado o inactivo');
+      throw new UnauthorizedException('User not found or inactive');
     }
 
     return {

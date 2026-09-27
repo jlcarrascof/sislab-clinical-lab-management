@@ -10,7 +10,7 @@ import { ROLES_KEY } from '../decorators/roles.decorator';
 import { User, UserRole } from '../../users/entities/user.entity';
 
 /**
- * Usar siempre después de JwtAuthGuard:
+ * Always use after JwtAuthGuard:
  *   @UseGuards(JwtAuthGuard, RolesGuard) @Roles(UserRole.ADMIN)
  */
 @Injectable()
@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
       UserRole[] | undefined
     >(ROLES_KEY, [context.getHandler(), context.getClass()]);
 
-    // Sin @Roles() → alcanza con estar autenticado
+    // No @Roles() → being authenticated is enough
     if (!requiredRoles?.length) return true;
 
     const { user } = context
@@ -30,7 +30,7 @@ export class RolesGuard implements CanActivate {
       .getRequest<Request & { user?: User }>();
     if (!user || !requiredRoles.includes(user.role)) {
       throw new ForbiddenException(
-        `Rol requerido: ${requiredRoles.join(' o ')}`,
+        `Required role: ${requiredRoles.join(' or ')}`,
       );
     }
     return true;

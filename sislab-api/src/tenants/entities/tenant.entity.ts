@@ -7,8 +7,8 @@ import {
 } from 'typeorm';
 
 export enum TenantPlan {
-  BASICO = 'BASICO',
-  PROFESIONAL = 'PROFESIONAL',
+  BASIC = 'BASIC',
+  PROFESSIONAL = 'PROFESSIONAL',
   ENTERPRISE = 'ENTERPRISE',
 }
 
@@ -23,25 +23,26 @@ export class Tenant {
   @Column({ unique: true, length: 100 })
   slug!: string;
 
+  /** Fiscal ID (RIF in Venezuela, RUT/CUIT/NIT elsewhere) */
   @Column({ type: 'varchar', length: 20, nullable: true })
-  rif!: string | null;
+  tax_id!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  direccion!: string | null;
+  address!: string | null;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  telefono!: string | null;
+  phone!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
   email!: string | null;
 
-  @Column({ type: 'enum', enum: TenantPlan, default: TenantPlan.BASICO })
+  @Column({ type: 'enum', enum: TenantPlan, default: TenantPlan.BASIC })
   plan!: TenantPlan;
 
   @Column({ default: true })
   is_active!: boolean;
 
-  // Configuración del laboratorio (Sprint 8: facturación)
+  /** Sales tax percentage applied on invoices (Sprint 8) */
   @Column({
     type: 'decimal',
     precision: 5,
@@ -49,7 +50,7 @@ export class Tenant {
     default: 16,
     transformer: { to: (v: number) => v, from: (v: string) => Number(v) },
   })
-  impuesto_porcentaje!: number;
+  tax_rate!: number;
 
   @CreateDateColumn()
   created_at!: Date;

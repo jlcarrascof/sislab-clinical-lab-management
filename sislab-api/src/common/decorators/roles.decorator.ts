@@ -3,5 +3,5 @@ import { UserRole } from '../../users/entities/user.entity';
 
 export const ROLES_KEY = 'roles';
 
-/** @Roles(UserRole.ADMIN, ...) — leído por RolesGuard */
+/** @Roles(UserRole.ADMIN, ...) — read by RolesGuard */
 export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);

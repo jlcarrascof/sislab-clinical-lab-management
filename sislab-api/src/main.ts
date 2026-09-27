@@ -12,7 +12,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Equivalente a $request->validate() de Laravel, aplicado a todos los DTOs
+  // Validates every DTO — the equivalent of Laravel's $request->validate()
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -23,6 +23,6 @@ async function bootstrap() {
 
   const port = Number(config.get('PORT', 3000));
   await app.listen(port);
-  console.log(`SisLab API corriendo en http://localhost:${port}`);
+  console.log(`SisLab API running on http://localhost:${port}`);
 }
 void bootstrap();

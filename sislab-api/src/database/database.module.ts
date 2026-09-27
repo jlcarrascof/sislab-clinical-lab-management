@@ -16,7 +16,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           username: config.getOrThrow<string>('DATABASE_USER'),
           password: config.getOrThrow<string>('DATABASE_PASSWORD'),
           autoLoadEntities: true,
-          synchronize: isDev, // solo en desarrollo; en producción usaremos migraciones
+          synchronize: isDev, // dev only; production will use migrations
           logging: isDev ? ['error', 'warn'] : ['error'],
         };
       },

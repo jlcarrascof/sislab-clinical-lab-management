@@ -11,8 +11,8 @@ import { TenantsService } from '../../tenants/tenants.service';
 export const TENANT_HEADER = 'x-tenant-id';
 
 /**
- * Resuelve el laboratorio (tenant) de cada request a partir del header X-Tenant-ID (slug).
- * Equivalente a un middleware de Laravel que hace $request->merge(['tenant' => ...]).
+ * Resolves the laboratory (tenant) of every request from the X-Tenant-ID header (slug).
+ * Similar to a Laravel middleware doing $request->merge(['tenant' => ...]).
  */
 @Injectable()
 export class TenantMiddleware implements NestMiddleware {
@@ -21,15 +21,15 @@ export class TenantMiddleware implements NestMiddleware {
   async use(req: Request, _res: Response, next: NextFunction) {
     const slug = req.header(TENANT_HEADER)?.trim();
     if (!slug) {
-      throw new BadRequestException('Header X-Tenant-ID es requerido');
+      throw new BadRequestException('X-Tenant-ID header is required');
     }
 
     const tenant = await this.tenantsService.findBySlug(slug);
     if (!tenant) {
-      throw new NotFoundException(`Laboratorio '${slug}' no encontrado`);
+      throw new NotFoundException(`Laboratory '${slug}' not found`);
     }
     if (!tenant.is_active) {
-      throw new ForbiddenException('Este laboratorio está inactivo');
+      throw new ForbiddenException('This laboratory is inactive');
     }
 
     req.tenant = tenant;
