@@ -57,7 +57,15 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const original = error.config as RetriableConfig | undefined
 
-    if (error.response?.status !== 401 || !original || original._retry) {
+    // Un 401 de /auth/* (p.ej. password incorrecto) no es una sesión expirada
+    const isAuthEndpoint = original?.url?.startsWith('/auth/') ?? false
+    if (
+      error.response?.status !== 401 ||
+      !original ||
+      original._retry ||
+      isAuthEndpoint ||
+      !bridge?.getRefreshToken()
+    ) {
       return Promise.reject(error)
     }
     original._retry = true
